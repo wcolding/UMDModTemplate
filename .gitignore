@@ -1,0 +1,7 @@
+*.log
+manifest.txt
+
+Build/*.umd
+UMD/*.umd
+src/*
+Tools/*.exe
