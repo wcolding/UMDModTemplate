@@ -1,0 +1,1 @@
+Start-Process -NoNewWindow -FilePath "python" -ArgumentList "pack.py"
