@@ -14,7 +14,7 @@ def Xor(data):
     size = len(dataArray)
     for i in range(size):
         encrypted[i] = dataArray[i] ^ 183 # Key is 0xB7
-    return bytes(encrypted)
+    return encrypted
 
 
 for file in manifest:
