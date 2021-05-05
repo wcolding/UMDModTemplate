@@ -17,8 +17,8 @@ def Xor(data):
         encrypted[i] = dataArray[i] ^ 183 # Key is 0xB7
     return encrypted
 
-def MatchesMD5(manifestMD5):
-    md5 = hashlib.md5(str(fdata).encode('utf-8')).hexdigest()
+def MatchesMD5(manifestMD5, data):
+    md5 = hashlib.md5(str(data).encode('utf-8')).hexdigest()
     return md5 == manifestMD5
 
 
@@ -34,7 +34,7 @@ for file in manifest:
             if f.tell() == int(file[2]):
                 print("Passed size check (" + file[2] + " bytes)")
                 
-                if MatchesMD5(file[3]):
+                if MatchesMD5(file[3], fdata):
                     print("Passed md5 check. No change in file.\n")
                 else:
                     changedFiles.append(file)
@@ -45,7 +45,7 @@ for file in manifest:
 
         else:
             
-            if MatchesMD5(file[3]):
+            if MatchesMD5(file[3], fdata):
                 print("File requires compression and is unchanged. Skipping.\n")
             else:
                 print("File requires compression and cannot be packed.\n")
