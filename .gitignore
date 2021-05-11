@@ -3,3 +3,4 @@ manifest.txt
 
 Tools/*.exe
 src/*
+__pycache__/*

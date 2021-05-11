@@ -1,13 +1,15 @@
 import os
 import hashlib
 import csv
+import directory as dir
 
-dir = os.getcwd()
+#dir = os.getcwd()
 manifestFile = open("manifest.txt", "r")
 manifest = csv.reader(manifestFile)
 
 changedFiles = []
 unchangedFiles = []
+sizeChangedFiles = []
 
 def Xor(data):
     dataArray = bytearray(data)
@@ -23,7 +25,7 @@ def MatchesMD5(manifestMD5, data):
 
 
 for file in manifest:
-    filepath = dir + "\\src\\" + file[0]
+    filepath = dir.srcDir + file[0]
     print(filepath)
     try:
         f = open(filepath, "rb")
@@ -31,24 +33,17 @@ for file in manifest:
 
         if int(file[1]) > -1:
             
-            if f.tell() == int(file[2]):
-                print("Passed size check (" + file[2] + " bytes)")
-                
-                if MatchesMD5(file[3], fdata):
-                    print("Passed md5 check. No change in file.\n")
-                else:
+            if f.tell() == int(file[2]):                
+                if not MatchesMD5(file[3], fdata):
                     changedFiles.append(file)
                     
             else:
-                print("File failed size check and cannot be packed.\n")
-                unchangedFiles.append(file)  
+                print(file[0] + " failed size check and cannot be packed.\n")
+                sizeChangedFiles.append(file)  
 
         else:
             
-            if MatchesMD5(file[3], fdata):
-                print("File requires compression and is unchanged. Skipping.\n")
-            else:
-                print("File requires compression and cannot be packed.\n")
+            if not MatchesMD5(file[3], fdata):
                 unchangedFiles.append(file)  
 
         f.close()
@@ -59,17 +54,23 @@ for file in manifest:
 manifestFile.close()
 
 if (len(unchangedFiles) > 0):
-    print("The following files could not be packed:")
+    print("The following files could not located in uncompressed UMD:")
     for file in unchangedFiles:
         print("- " + file[0])
     print("")
 
+if (len(sizeChangedFiles) > 0):
+    print("The following files failed size check and could not be packed:")
+    for file in sizeChangedFiles:
+        print("- " + file[0])
+    print("")
+
 numFiles = len(changedFiles)
-print(str(numFiles) + " file(s) will be changed:")
 
 if (numFiles > 0):
+    print(str(numFiles) + " file(s) will be changed:")
     try:
-        unpackedPath = dir + "\\UMD\\Uncompressed.umd"
+        unpackedPath = dir.umdDir + "Uncompressed.umd"
         unpacked = open(unpackedPath, "rb")
     except:
         print("Unable to open uncompressed UMD. Did you run ./unpack first?")
@@ -81,7 +82,7 @@ if (numFiles > 0):
     
     for file in changedFiles:
        print("- " + file[0])
-       filepath = dir + "\\src\\" + file[0]
+       filepath = dir.srcDir + file[0]
        f = open(filepath, "rb")
        fdata = f.read()
        fileEndOffset = int(file[1]) + int(file[2])
@@ -91,8 +92,10 @@ if (numFiles > 0):
     print("\nEncoding data...")
     encryptedData = Xor(patchedData)
 
-    patchedPath = dir + "\\Build\\Conviction.umd"
+    patchedPath = dir.baseDir + "\\Build\\Conviction.umd"
     patched = open(patchedPath, "wb")
     patched.write(encryptedData)
     patched.close()
     print("\nAll finished!")
+else:
+    print("No files will be changed.")
