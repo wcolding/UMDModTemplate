@@ -2,10 +2,12 @@ import os
 import hashlib
 import csv
 import directory as dir
+import conform
 
-#dir = os.getcwd()
 manifestFile = open("manifest.txt", "r")
 manifest = csv.reader(manifestFile)
+
+tryResizeFiles = True
 
 changedFiles = []
 unchangedFiles = []
@@ -38,8 +40,17 @@ for file in manifest:
                     changedFiles.append(file)
                     
             else:
-                print(file[0] + " failed size check and cannot be packed.\n")
-                sizeChangedFiles.append(file)  
+                if tryResizeFiles:
+                    result = conform.TryResize(filepath, int(file[2]))
+                    if result != 0:
+                        print(file[0] + " failed resize attempt and cannot be packed.\n")
+                        sizeChangedFiles.append(file) 
+                    else:
+                        print(file[0] + " was resized successfully!\n") 
+                        changedFiles.append(file)
+                else:
+                    print(file[0] + " failed size check and cannot be packed.\n")
+                    sizeChangedFiles.append(file)  
 
         else:
             
