@@ -1,33 +1,18 @@
 import os
-import hashlib
 import csv
-import directory as dir
+import settings
 import conform
+import utilities
 
 manifestFile = open("manifest.txt", "r")
 manifest = csv.reader(manifestFile)
-
-tryResizeFiles = True
 
 changedFiles = []
 unchangedFiles = []
 sizeChangedFiles = []
 
-def Xor(data):
-    dataArray = bytearray(data)
-    encrypted = dataArray
-    size = len(dataArray)
-    for i in range(size):
-        encrypted[i] = dataArray[i] ^ 183 # Key is 0xB7
-    return encrypted
-
-def MatchesMD5(manifestMD5, data):
-    md5 = hashlib.md5(str(data).encode('utf-8')).hexdigest()
-    return md5 == manifestMD5
-
-
 for file in manifest:
-    filepath = dir.srcDir + file[0]
+    filepath = settings.srcDir + file[0]
     print(filepath)
     try:
         f = open(filepath, "rb")
@@ -36,11 +21,11 @@ for file in manifest:
         if int(file[1]) > -1:
             
             if f.tell() == int(file[2]):                
-                if not MatchesMD5(file[3], fdata):
+                if not utilities.MatchesMD5(file[3], fdata):
                     changedFiles.append(file)
                     
             else:
-                if tryResizeFiles:
+                if settings.tryResizeFiles:
                     result = conform.TryResize(filepath, int(file[2]))
                     if result != 0:
                         print(file[0] + " failed resize attempt and cannot be packed.\n")
@@ -54,7 +39,7 @@ for file in manifest:
 
         else:
             
-            if not MatchesMD5(file[3], fdata):
+            if not utilities.MatchesMD5(file[3], fdata):
                 unchangedFiles.append(file)  
 
         f.close()
@@ -81,7 +66,7 @@ numFiles = len(changedFiles)
 if (numFiles > 0):
     print(str(numFiles) + " file(s) will be changed:")
     try:
-        unpackedPath = dir.umdDir + "Uncompressed.umd"
+        unpackedPath = settings.umdDir + "Uncompressed.umd"
         unpacked = open(unpackedPath, "rb")
     except:
         print("Unable to open uncompressed UMD. Did you run ./unpack first?")
@@ -93,19 +78,20 @@ if (numFiles > 0):
     
     for file in changedFiles:
        print("- " + file[0])
-       filepath = dir.srcDir + file[0]
+       filepath = settings.srcDir + file[0]
        f = open(filepath, "rb")
        fdata = f.read()
        fileEndOffset = int(file[1]) + int(file[2])
        patchedData = patchedData[0:int(file[1])] + fdata + patchedData[fileEndOffset:unpackedSize]
        f.close()
 
-    print("\nEncoding data...")
-    encryptedData = Xor(patchedData)
+    if (settings.game == settings.Game.Conviction):
+        print("\nEncoding data...")
+        patchedData = utilities.Xor(patchedData)
 
-    patchedPath = dir.baseDir + "\\Build\\Conviction.umd"
+    patchedPath = "%s\\Build\\%s"%(settings.baseDir, settings.umdName)
     patched = open(patchedPath, "wb")
-    patched.write(encryptedData)
+    patched.write(patchedData)
     patched.close()
     print("\nAll finished!")
 else:
