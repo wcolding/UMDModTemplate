@@ -24,3 +24,5 @@ SystemFolder = ""
 baseDir = os.getcwd()
 umdDir = baseDir + "\\UMD\\"
 srcDir = baseDir + "\\src\\"
+
+allowedFilesList = ['.git', '.gitignore', 'Build', 'build.ps1', 'conform.py', 'manifest.py', 'pack.py', 'README.md', 'settings.py', 'src', 'Tools', 'UMD', 'unpack.py', 'utilities.py', '__pycache__']

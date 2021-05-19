@@ -17,6 +17,16 @@ def AddEntry(path, offset, data):
     filelist.append(newEntry)
     print(newEntry)
 
+def SwapFile(filestring):
+    f = open(filestring, "rb")
+    fData = f.read()
+    newData = utilities.Xor(fData)
+    f.close()
+
+    e = open(filestring, "wb")
+    e.write(newData)
+    e.close()
+
 
 def ReadFiles(files, umdData, subdir=""):
     for file in files:
@@ -24,6 +34,11 @@ def ReadFiles(files, umdData, subdir=""):
         filestring = dirstring + file
         if "." in file:
             # This is a file, add it to the manifest
+
+            # If this is not a Conviction file, xor it
+            if not settings.game == settings.Game.Conviction:
+                SwapFile(filestring)
+
             curFile = open(filestring, "rb")
             curData = curFile.read()
             offset = GetOffset(umdData, curData)
@@ -32,6 +47,8 @@ def ReadFiles(files, umdData, subdir=""):
             else:
                 if not settings.useOptimizedManifest:
                     AddEntry(subdir + file, offset, curData)
+                else:
+                    print("%s not found in Uncompressed.umd, skipping"%(subdir + file))
             curFile.close()
         else:
             # This is a folder, search its contents
@@ -49,10 +66,13 @@ def Generate():
     ReadFiles(baseLevel, data)
     umdFile.close()
 
-    manifest = open("manifest.txt", "w")
-
+    manifest = open("manifest.txt", "w") 
+    count = 0
     for line in filelist:
-        manifest.write(line + "\n")
+        count += 1
+        manifest.write(line)
+        if count < len(filelist):
+            manifest.write("\n")
 
     manifest.close()
     print("All done!")
