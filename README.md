@@ -9,7 +9,7 @@ This repository contains no game files, and contains .gitignores to keep it free
 You will also need [Gildor's unumd](https://www.gildor.org/smf/index.php/topic,458.msg15196.html#msg15196) for the initial unpacking of the compressed umd. Place unumd.exe in the 'Tools' folder.
 ***
 ### Getting Started
-You'll want to start with a clean install of your game with no files modified. Clone this repo or [download it as a .zip](https://github.com/wcolding/ConvictionModTemplate/archive/refs/heads/master.zip).  
+You'll want to start with a clean install of your game with no files modified. Clone this repo or [download it as a .zip](https://github.com/wcolding/UMDModTemplate/archive/refs/heads/master.zip).  
 
 First, put the umd you want to modify into the 'UMD' folder. Only the first found umd file will be extracted, so I recommend creating different instances of this template for different umds you might want to mod. Edit `settings.py` in a text editor or IDE and change umdName to the name of your umd (keeping the quotes). Change game to the appropriate value. Possible values are `Game.Conviction` or `Game.Blacklist`.
 
