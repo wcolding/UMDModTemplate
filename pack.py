@@ -3,6 +3,7 @@ import csv
 import settings
 import conform
 import utilities
+import shutil
 
 manifestFile = open("manifest.txt", "r")
 manifest = csv.reader(manifestFile)
@@ -93,6 +94,13 @@ if (numFiles > 0):
     patched = open(patchedPath, "wb")
     patched.write(patchedData)
     patched.close()
+    if settings.CopyFolder != "":
+        copyPath = settings.CopyFolder
+        if (copyPath[-1] != '\\'):
+            copyPath += '\\'
+        copyPath += settings.umdName
+        shutil.copyfile(patchedPath, copyPath)
+
     print("\nAll finished!")
 else:
     print("No files will be changed.")

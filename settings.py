@@ -19,8 +19,10 @@ useOptimizedManifest = True
 # This only triggers if there is a mismatch with the file size and the size in the manifest 
 tryResizeFiles = True
 
+# Optional. Pack script will copy built UMD to this directory if specified
+CopyFolder = ""
+
 # Directory macros for the other scripts, do not modify
-SystemFolder = ""
 baseDir = os.getcwd()
 umdDir = baseDir + "\\UMD\\"
 srcDir = baseDir + "\\src\\"
